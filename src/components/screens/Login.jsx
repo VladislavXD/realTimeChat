@@ -14,8 +14,6 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 
 
 
-
-
 const Auth = () => {
   const [type, setType] = useState  ("login");
   const {auth} = useContext(Context)
@@ -54,8 +52,8 @@ const Auth = () => {
 
             <div className="flex flex-col gap-2 text-center ">
               <Button variant="bordered" onClick={Login} ><img src={GoogleIcon} alt="" />Continue With Google</Button>
-              <p className="text-xs ">Need to create an account?
-                <Link onClick={() => { setType(type === 'login' ? 'register' : 'login') }} href="#">
+              <p className="text-xs">Need to create an account?
+                <Link  onClick={() => { setType(type === 'login' ? 'register' : 'login') }} href="#">
                   {type == 'login' ? 'Sign Up' : 'login'}</Link> </p>
             </div>
 

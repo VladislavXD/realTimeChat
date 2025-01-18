@@ -10,13 +10,21 @@ import {
   Dropdown,
   DropdownMenu,
   Avatar,
+  Switch,
+  Button,
+  PopoverTrigger,
+  Popover,
+  PopoverContent,
 } from "@nextui-org/react";
 import { useTheme } from "next-themes";
 import { useContext, useEffect, useState } from "react";
 import { Context } from "../main";
-import { getAuth, onAuthStateChanged } from "firebase/auth";
+
 import Loader from "./loader/Loader";
-import {  useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
+import { MoonIcon, SunIcon } from "../utils/icons";
+
+
 export const AcmeLogo = () => {
   return (
     <svg fill="none" height="36" viewBox="0 0 32 32" width="36">
@@ -73,14 +81,14 @@ export default function Nav() {
       setUser(currentUser);
       setLoading(false);
     });
-  
+
     return () => unsubscribe();
   }, [auth]);
 
   if (loading) {
     return <Loader />; // Показать лоадер во время проверки состояния
   }
-  if(!user) navigate('/login')
+  if (!user) navigate('/login')
 
   const handleSignOut = async () => {
     try {
@@ -89,8 +97,10 @@ export default function Nav() {
       console.error("Error signing out:", error);
     }
   };
-  console.log(user);
-  const { theme } = useTheme()
+
+
+  const { theme, setTheme } = useTheme()
+
   return (
     <Navbar isBordered className={`${theme} absolute`}>
       <NavbarContent justify="start">
@@ -99,20 +109,8 @@ export default function Nav() {
           <p className="hidden sm:block font-bold text-inherit">ACME</p>
         </NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-3">
+
           <NavbarItem>
-            <Link color="foreground" href="#">
-              Features
-            </Link>
-          </NavbarItem>
-          <NavbarItem isActive>
-            <Link aria-current="page" color="secondary" href="#">
-              Customers
-            </Link>
-          </NavbarItem>
-          <NavbarItem>
-            <Link color="foreground" href="#">
-              Integrations
-            </Link>
           </NavbarItem>
         </NavbarContent>
       </NavbarContent>
@@ -131,6 +129,23 @@ export default function Nav() {
           startContent={<SearchIcon size={18} />}
           type="search"
         />
+        <Popover  color='danger' placement="bottom">
+          <PopoverTrigger>
+            <Button color="success">Create chat</Button>
+          </PopoverTrigger>
+          <PopoverContent>Coming soon</PopoverContent>
+        </Popover>
+        <Switch
+          defaultSelected
+          color="success"
+          endContent={<MoonIcon />}
+          size="lg"
+          startContent={<SunIcon />}
+          onChange={() => setTheme(theme === 'light' ? 'dark' : 'light')}
+        >
+
+        </Switch>
+
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <Avatar

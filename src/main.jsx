@@ -8,11 +8,13 @@ import firebase from 'firebase/compat/app';
 
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getStorage } from 'firebase/storage';
+
 
 // TODO: Add SDKs for Firebase products that you want to use
 // https://firebase.google.com/docs/web/setup#available-libraries
 import { getAuth } from "firebase/auth";
+import { getFirestore } from 'firebase/firestore';
+import { useTheme } from 'next-themes';
 // Your web app's Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyDQOgmr4-hiT2PEHyNvoC99t5lmB4pYp9A",
@@ -28,8 +30,9 @@ const app = initializeApp(firebaseConfig);
 
 
 export const Context = createContext(null)
-const firestore = getStorage(app)
+const firestore = getFirestore(app)
 const auth = getAuth()
+
 
 createRoot(document.getElementById('root')).render(
 
@@ -39,7 +42,9 @@ createRoot(document.getElementById('root')).render(
       auth,
       firestore
     }}>
-      <App />
+
+      < App />
+
     </Context.Provider>
   </NextUIProvider>,
 

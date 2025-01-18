@@ -3,24 +3,15 @@ import { Navigate, Route, Routes } from 'react-router-dom'
 import { privateRoutes, publickRoutes } from '../routes'
 import Loader from './loader/Loader'
 import { Context } from '../main'
-import { getAuth, onAuthStateChanged } from 'firebase/auth'
+import { useAuthState } from 'react-firebase-hooks/auth';
+
 
 const AppRouter = () => {
-  const { auth } = useContext(Context);
-  const [user, setUser] = useState(null); // Состояние для хранения текущего пользователя
-  const [loading, setLoading] = useState(true); // Состояние для загрузки
+  const {auth} = useContext(Context)
+  const [user, loading, error] = useAuthState(auth)
 
 
-  useEffect(() => {
-    const unsubscribe = auth.onAuthStateChanged((currentUser) => {
-      setUser(currentUser);
-      setLoading(false);
-    });
   
-    return () => unsubscribe();
-  }, [auth]);
-
-    // Очистка слушателя при размонтировании компонента
   
   
   if (loading) {
