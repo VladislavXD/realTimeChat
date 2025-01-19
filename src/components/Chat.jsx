@@ -20,7 +20,7 @@ const Chat = () => {
 
   const {theme} = useTheme()
 
-
+  // getting all messages from db
   useEffect(() => {
     const queryMessages = query(valueRef, orderBy('createdAt', 'asc'))
     const getMess = onSnapshot(queryMessages, (snapshot) => {
@@ -33,7 +33,7 @@ const Chat = () => {
     return () => getMess()
   }, [])
 
-
+  // submit message in chat
   const submit = async (e) => {
     e.preventDefault()
 
@@ -57,7 +57,7 @@ const Chat = () => {
   };
 
   useEffect(() => {
-    scrollToBottom(); // Прокручиваем вниз при загрузке
+    scrollToBottom(); // прокрутка вниз при загрузке
   }, [message]); // Срабатывает каждый раз, когда сообщения обновляются
 
 
