@@ -2,12 +2,12 @@ import { Input } from "@nextui-org/input";
 import React, { FC, forwardRef, useEffect } from "react";
 import { EyeSlashFilledIcon } from "./inputIcon/EyeSlashFilledIcon";
 import { EyeFilledIcon } from "./inputIcon/EyeFilledIcon";
-import { IField } from "./field.interface";
-import cn from 'clsx'
 
 
 
-const Field = ((
+
+
+const Field =  forwardRef((
   { 
   type, 
   className,
@@ -31,7 +31,7 @@ const Field = ((
 
 
   return (
-    <div className={cn('dark:text-white', className)} style={style}>
+    <div className='dark:text-white' style={style}>
       <Input
         label={placeholder}
         isClearable={isClear}

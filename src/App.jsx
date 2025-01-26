@@ -16,9 +16,9 @@ function App() {
       <Provider>
         <BrowserRouter>
           <React.Suspense fallback={<Loader />}>
-            <Layout>
+
               <AppRouter />
-            </Layout>
+
           </React.Suspense>
         </BrowserRouter>
       </Provider>

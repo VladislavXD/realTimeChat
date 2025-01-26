@@ -88,7 +88,7 @@ export default function Nav() {
   if (loading) {
     return <Loader />; // Показать лоадер во время проверки состояния
   }
-  if (!user) navigate('/login')
+  if (!user) navigate('/login/:chatId')
 
   const handleSignOut = async () => {
     try {
