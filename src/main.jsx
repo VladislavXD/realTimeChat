@@ -30,8 +30,8 @@ const app = initializeApp(firebaseConfig);
 
 
 export const Context = createContext(null)
-const firestore = getFirestore(app)
-const auth = getAuth()
+export const firestore = getFirestore(app)
+export const auth = getAuth()
 
 
 createRoot(document.getElementById('root')).render(

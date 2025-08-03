@@ -1,0 +1,30 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Правила для коллекции messages (сообщения чата)
+    match /messages/{messageId} {
+      // Разрешить чтение всем аутентифицированным пользователям
+      allow read: if request.auth != null;
+      
+      // Разрешить создание только аутентифицированным пользователям
+      // и только если uid в документе совпадает с uid пользователя
+      allow create: if request.auth != null && 
+                   request.auth.uid == request.resource.data.uid;
+      
+      // Разрешить обновление и удаление только автору сообщения
+      allow update, delete: if request.auth != null && 
+                            request.auth.uid == resource.data.uid;
+    }
+    
+    // Правила для коллекции users (данные пользователей)
+    match /users/{userId} {
+      // Разрешить чтение и запись только владельцу профиля
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Все остальные коллекции запрещены
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

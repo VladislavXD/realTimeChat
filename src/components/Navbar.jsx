@@ -88,7 +88,7 @@ export default function Nav() {
   if (loading) {
     return <Loader />; // Показать лоадер во время проверки состояния
   }
-  if (!user) navigate('/login/:chatId')
+  if (!user) navigate('/login')
 
   const handleSignOut = async () => {
     try {
@@ -155,7 +155,7 @@ export default function Nav() {
               color="secondary"
               name="Jason Hughes"
               size="sm"
-              src={`${user.photoURL}`}
+              src={`${user.photoURL  || '/defaultAvatar.webp'}`}
             />
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">

@@ -24,7 +24,8 @@ const AppRouter = () => {
           <Route key={path} path={path} element={<Component />} />
         ))
       )}
-      <Route path="*" element={<Navigate to={user ? '/chat' : '/login/:chatId'} />} />
+       {/* <Route path="/" element={<Navigate to={user ? '/chat' : '/login'} />} /> */}
+      <Route path="*" element={<Navigate to={user ? '/chat' : '/login'} />} />
     </Routes>
   );
 };
